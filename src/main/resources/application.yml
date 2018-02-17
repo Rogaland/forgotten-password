@@ -1,0 +1,6 @@
+rfk:
+ ldap:
+  url:
+  user:
+  password:
+  searchBase:
