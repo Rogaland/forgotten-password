@@ -32,7 +32,7 @@ class PasswordResetSpec extends MockMvcSpecification {
         def response = mockMvc.perform(get("/api/userinfo/${UserFactory.userInfo.dn}"))
 
         then:
-        1 * ldapTemplate.find(_ as LdapQuery, UserInfo) >> Arrays.asList(UserFactory.userInfo)
+        1 * ldapTemplate.find(_ as LdapQuery, UserInfo) >> [UserFactory.userInfo]
         response.andExpect(status().isOk())
                 .andExpect(jsonPathSize('$..*', 3))
                 .andExpect(jsonPathEquals('$.dn', UserFactory.userInfo.dn))

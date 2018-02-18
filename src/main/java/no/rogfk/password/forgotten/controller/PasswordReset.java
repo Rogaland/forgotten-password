@@ -16,9 +16,7 @@ public class PasswordReset {
 
     @GetMapping("/userinfo/{dn}")
     public UserInfo getUserInfo(@PathVariable String dn) {
-
         return ldapService.getUserInfo(dn);
-
     }
 
     @PostMapping("/password")

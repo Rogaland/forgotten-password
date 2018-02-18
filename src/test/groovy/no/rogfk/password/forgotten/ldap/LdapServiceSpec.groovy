@@ -23,7 +23,7 @@ class LdapServiceSpec extends Specification {
         def userInfo = ldapService.getUserInfo('12345678987')
 
         then:
-        1 * ldapTemplate.find(_ as LdapQuery, UserInfo) >> Arrays.asList(UserFactory.userInfo)
+        1 * ldapTemplate.find(_ as LdapQuery, UserInfo) >> [UserFactory.userInfo]
         userInfo != null
     }
 
@@ -32,7 +32,7 @@ class LdapServiceSpec extends Specification {
         def userInfo = ldapService.getUserInfo('12345678987')
 
         then:
-        1 * ldapTemplate.find(_ as LdapQuery, _ as Class) >> Arrays.asList(UserFactory.userInfo, UserFactory.userInfo)
+        1 * ldapTemplate.find(_ as LdapQuery, _ as Class) >> [UserFactory.userInfo, UserFactory.userInfo]
         userInfo == null
         thrown MultipleUsersFound
     }
