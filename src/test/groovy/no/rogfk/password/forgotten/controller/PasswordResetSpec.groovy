@@ -3,6 +3,7 @@ package no.rogfk.password.forgotten.controller
 import com.fasterxml.jackson.databind.ObjectMapper
 import no.fint.test.utils.MockMvcSpecification
 import no.rogfk.password.forgotten.ldap.LdapService
+import no.rogfk.password.forgotten.model.UserInfo
 import no.rogfk.password.forgotten.model.UserPassword
 import no.rogfk.password.forgotten.utils.UserFactory
 import org.springframework.http.MediaType
@@ -27,21 +28,19 @@ class PasswordResetSpec extends MockMvcSpecification {
     }
 
     def "Get user information"() {
-
         when:
-        def response = mockMvc.perform(get("/api/userinfo/" + UserFactory.getUserInfo().dn))
+        def response = mockMvc.perform(get("/api/userinfo/${UserFactory.userInfo.dn}"))
 
         then:
+        1 * ldapTemplate.find(_ as LdapQuery, UserInfo) >> [UserFactory.userInfo]
         response.andExpect(status().isOk())
                 .andExpect(jsonPathSize('$..*', 3))
-                .andExpect(jsonPathEquals('$.dn', UserFactory.getUserInfo().dn))
-                .andExpect(jsonPathEquals('$.firstName', UserFactory.getUserInfo().firstName))
-                .andExpect(jsonPathEquals('$.lastName', UserFactory.getUserInfo().lastName))
-        1 * ldapTemplate.find(_ as LdapQuery, _ as Class) >> Arrays.asList(UserFactory.userInfo)
+                .andExpect(jsonPathEquals('$.dn', UserFactory.userInfo.dn))
+                .andExpect(jsonPathEquals('$.firstName', UserFactory.userInfo.firstName))
+                .andExpect(jsonPathEquals('$.lastName', UserFactory.userInfo.lastName))
     }
 
     def "Set password successfully"() {
-
         when:
         def response = mockMvc.perform(post('/api/password')
                 .content(new ObjectMapper().writeValueAsString(UserFactory.userPassword))
@@ -49,21 +48,23 @@ class PasswordResetSpec extends MockMvcSpecification {
         )
 
         then:
-        response.andExpect(status().isOk())
         1 * ldapTemplate.update(_ as UserPassword)
+        response.andExpect(status().isOk())
     }
 
     def "Set password unsuccessfully/user not found"() {
+        given:
+        def userPassword = UserFactory.userPassword
 
         when:
         def response = mockMvc.perform(post('/api/password')
-                .content(new ObjectMapper().writeValueAsString(UserFactory.userPassword))
+                .content(new ObjectMapper().writeValueAsString(userPassword))
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
         )
 
         then:
+        1 * ldapTemplate.update(_ as UserPassword) >> { throw new NameNotFoundException('user not found') }
         response.andExpect(status().isNotFound())
-        1 * ldapTemplate.update(_ as UserPassword) >> { throw new NameNotFoundException("user not found") }
     }
 
 }

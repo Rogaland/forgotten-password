@@ -37,7 +37,6 @@ public class LdapService {
     }
 
     public boolean setPassword(UserPassword userPassword) {
-
         try {
             ldapTemplate.update(userPassword);
             return true;
