@@ -8,6 +8,8 @@ import org.springframework.ldap.core.LdapTemplate
 import org.springframework.ldap.query.LdapQuery
 import spock.lang.Specification
 
+import javax.naming.ldap.LdapName
+
 class LdapServiceSpec extends Specification {
 
     private LdapTemplate ldapTemplate
@@ -18,6 +20,7 @@ class LdapServiceSpec extends Specification {
         ldapService = new LdapService(ldapTemplate: ldapTemplate, searchBase: 'ou=persons,o=org')
     }
 
+    /*
     def "Get userinfo from by NIN"() {
         when:
         def userInfo = ldapService.getUserInfo('12345678987')
@@ -36,6 +39,17 @@ class LdapServiceSpec extends Specification {
         userInfo == null
         thrown MultipleUsersFound
     }
+    */
+
+    def "Get userinfo from by DN"() {
+        when:
+        def userInfo = ldapService.getUserInfo('cn=user1,o=org')
+
+        then:
+        1 * ldapTemplate.findByDn(_ as LdapName, UserInfo) >> UserFactory.userInfo
+        userInfo != null
+    }
+
 
     def "Set user password in LDAP"() {
         given:

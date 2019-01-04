@@ -4,3 +4,7 @@ rfk:
   user:
   password:
   searchBase:
+
+springfox:
+ title: 'forgotten-password'
+ version: '0.0.1-SNAPSHOT'

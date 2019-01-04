@@ -12,6 +12,8 @@ import org.springframework.ldap.core.LdapTemplate
 import org.springframework.ldap.query.LdapQuery
 import org.springframework.test.web.servlet.MockMvc
 
+import javax.naming.ldap.LdapName
+
 class PasswordResetSpec extends MockMvcSpecification {
 
     private MockMvc mockMvc
@@ -32,9 +34,8 @@ class PasswordResetSpec extends MockMvcSpecification {
         def response = mockMvc.perform(get("/api/userinfo/${UserFactory.userInfo.dn}"))
 
         then:
-        1 * ldapTemplate.find(_ as LdapQuery, UserInfo) >> [UserFactory.userInfo]
+        1 * ldapTemplate.findByDn(_ as LdapName, UserInfo) >> UserFactory.userInfo
         response.andExpect(status().isOk())
-                .andExpect(jsonPathSize('$..*', 3))
                 .andExpect(jsonPathEquals('$.dn', UserFactory.userInfo.dn))
                 .andExpect(jsonPathEquals('$.firstName', UserFactory.userInfo.firstName))
                 .andExpect(jsonPathEquals('$.lastName', UserFactory.userInfo.lastName))

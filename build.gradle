@@ -34,6 +34,8 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.ldap:spring-ldap-core:2.3.2.RELEASE')
 
+    compile("com.github.springfox.loader:springfox-loader:2.0.0")
+
     compileOnly('org.projectlombok:lombok')
 
     testCompile('no.fint:fint-test-utils:0.0.4')

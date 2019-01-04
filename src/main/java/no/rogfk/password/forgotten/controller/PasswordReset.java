@@ -1,5 +1,7 @@
 package no.rogfk.password.forgotten.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import no.rogfk.password.forgotten.ldap.LdapService;
 import no.rogfk.password.forgotten.model.UserInfo;
 import no.rogfk.password.forgotten.model.UserPassword;
@@ -16,7 +18,14 @@ public class PasswordReset {
 
     @GetMapping("/userinfo/{dn}")
     public UserInfo getUserInfo(@PathVariable String dn) {
-        return ldapService.getUserInfo(dn);
+        UserInfo userInfo = ldapService.getUserInfo(dn);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            System.out.println(objectMapper.writeValueAsString(userInfo));
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return userInfo;
     }
 
     @PostMapping("/password")
